@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from threading import Thread
 import numpy as np
 import cv2
 
@@ -11,7 +11,7 @@ class VideoShow:
         self.stopped = False
 
     def start(self):
-        Process(target=self.show, args=()).start()
+        Thread(target=self.show, args=()).start()
         return self
 
     def show(self):

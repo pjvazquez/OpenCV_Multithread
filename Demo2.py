@@ -16,17 +16,8 @@ def putIterationsPerSec(frame, iterations_per_sec):
         (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
     return frame
 
-def putState(frame, state):
-    """
-    Add State info in frame.
-    """
 
-    cv2.putText(frame, str(state), 
-                (10, 10), 
-                cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
-    return frame
-
-def runThreads(source=0, FiniteStateMachine = None):
+def runThreads(source=0):
     """
     Dedicated thread for grabbing video frames with VideoGet object.
     Dedicated thread for showing video frames with VideoShow object.
@@ -44,23 +35,13 @@ def runThreads(source=0, FiniteStateMachine = None):
             video_getter.stop()
             break
         
-        if FiniteStateMachine is not None:
-            FiniteStateMachine.next()
-        
         frame = video_getter.frame
         frame = putIterationsPerSec(frame, cps.countsPerSec())
-        frame = putState(frame, FiniteStateMachine.state)
         video_shower.frame = frame
         cps.increment()
 
 def main():
-    smile = Smile()
-    fsm = Machine(smile, 
-                states = StateManager.states, 
-                transitions = StateManager.transitions,
-                initial="start")
-                
-    runThreads(source=0,FiniteStateMachine=smile )
+    runThreads(source=0)
 
 if __name__ == "__main__":
     main()

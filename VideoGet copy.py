@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from threading import Thread
 import cv2
 
 class VideoGet:
@@ -13,7 +13,7 @@ class VideoGet:
         self.stopped = False
 
     def start(self):    
-        Process(target=self.get, args=()).start()
+        Thread(target=self.get, args=()).start()
         return self
 
     def get(self):
