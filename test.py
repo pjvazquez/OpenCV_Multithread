@@ -37,14 +37,21 @@ def overlay_transparent(background, overlay, x, y):
 
     return background
 
+# creates a named window to reuse
 cv2.namedWindow("Video", cv2.WND_PROP_FULLSCREEN)
+# set properties as full screen
 cv2.setWindowProperty("Video",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
-image = np.asarray(cv2.imread('happy.jpg'))
-image2 = cv2.resize(image,(4096,3112))
-toShow = np.zeros((3112,4096,3))
-# toShow[0:image.shape[0],0:image.shape[1]] = image
-toShow = overlay_transparent(image2, image,0,0)
+# moves window longer than primary monitor position so fix it in second monitor
+cv2.moveWindow("Video",3000,0)
+# gets background image
+image = cv2.imread('img/Diapositiva1.png')
+image = cv2.resize(image,(3840,2160))
+# gets other image to overlay with
+image2 = cv2.imread('img/happy.jpg')
+# function to overlay images of different sizes at x,y position
+toShow = overlay_transparent(image, image2,0,0)
 stopped = False
+
 while not stopped:
     cv2.imshow("Video", toShow)
     if cv2.waitKey(1) == ord("q"):

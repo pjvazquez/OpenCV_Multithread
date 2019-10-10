@@ -16,11 +16,11 @@ class VideoShow:
 
     def show(self):
         cv2.namedWindow("Video", cv2.WND_PROP_FULLSCREEN)
+        cv2.moveWindow("Video",3000,0)
         cv2.setWindowProperty("Video",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
-        toShow = np.zeros((4096,3112))
+
         while not self.stopped:
-            toShow += frame
-            cv2.imshow("Video", toShow)
+            cv2.imshow("Video", self.frame)
             if cv2.waitKey(1) == ord("q"):
                 self.stopped = True
 
