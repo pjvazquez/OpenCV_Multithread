@@ -6,13 +6,9 @@ class VideoShow:
     """
     Class that continuously shows a frame using a dedicated thread.
     """
-    def __init__(self, frame=None):
-        self.frame = frame
+    def __init__(self, frame_queue):
+        self.frame = frame_queue
         self.stopped = False
-
-    def start(self):
-        Process(target=self.show, args=()).start()
-        return self
 
     def show(self):
         cv2.namedWindow("Video", cv2.WND_PROP_FULLSCREEN)
@@ -20,9 +16,15 @@ class VideoShow:
         cv2.setWindowProperty("Video",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
         while not self.stopped:
-            cv2.imshow("Video", self.frame)
+            if not self.frame.empty():
+                cv2.imshow("Video", self.frame.get())
+
             if cv2.waitKey(1) == ord("q"):
                 self.stopped = True
 
     def stop(self):
         self.stopped = True
+
+    if __name__ == "__main__":
+        print("init videoshow")
+        show()

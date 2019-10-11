@@ -12,7 +12,7 @@ class Smile(object):
         self.attempts = 0
         self.people = 0
         self.smiles = 0
-        self.max_wait = 1
+        self.max_wait = 5
         self.message = False
 
     # gets True if number of detected people in fron of the camera is >= 1
@@ -52,12 +52,12 @@ class Smile(object):
 
     # show message on screen
     def show_message(self):
-        print("\n\n\n MESSAGE \n\n\n")
+        # print("MESSAGE")
         self.message = True
 
     # show atracting message on screen
     def show_image(self):
-        print("\n\n\n IMAGE \n\n\n")
+        # print("IMAGE")
         self.message = True
 
     # returns TRue if message alrady shopwn
@@ -66,7 +66,8 @@ class Smile(object):
 
     # prints stats 
     def stats(self): 
-        print('It took you some seconds')
+        # print('It took you some seconds')
+        t = self.elapsed_time
 
 states=['start', 'have_people', 'show_message', 'wait_smiles', 'show_message', 'end']
 

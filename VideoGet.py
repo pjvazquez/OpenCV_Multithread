@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 import cv2
 
 class VideoGet:
@@ -7,14 +7,11 @@ class VideoGet:
     with a dedicated thread.
     """
 
-    def __init__(self, src=0):
+    def __init__(self, src, frame_queue):
+        self.queue = frame_queue
         self.stream = cv2.VideoCapture(src)
-        (self.grabbed, self.frame) = self.stream.read()
+        # (self.grabbed, self.frame) = self.stream.read()
         self.stopped = False
-
-    def start(self):    
-        Process(target=self.get, args=()).start()
-        return self
 
     def get(self):
         while not self.stopped:
@@ -22,6 +19,11 @@ class VideoGet:
                 self.stop()
             else:
                 (self.grabbed, self.frame) = self.stream.read()
+                self.queue(self.frame)
 
     def stop(self):
         self.stopped = True
+
+    if __name__ == "__main__":
+        print("init videoget")
+        get()

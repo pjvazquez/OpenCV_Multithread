@@ -1,3 +1,4 @@
+from multiprocessing import Process, Queue
 import argparse
 import cv2
 from CountsPerSec import CountsPerSec
@@ -17,7 +18,7 @@ def putIterationsPerSec(frame, iterations_per_sec):
     return frame
 
 
-def runThreads(source=0):
+def runProceses(source=0):
     """
     Dedicated thread for grabbing video frames with VideoGet object.
     Dedicated thread for showing video frames with VideoShow object.
@@ -25,23 +26,25 @@ def runThreads(source=0):
     VideoShow objects/threads.
     """
 
-    video_getter = VideoGet(source).start()
-    video_shower = VideoShow(video_getter.frame).start()
-    cps = CountsPerSec().start()
+    # videoget = VideoGet(source)
+    # videoshow = VideoShow(frame)
 
-    while True:
-        if video_getter.stopped or video_shower.stopped:
-            video_shower.stop()
-            video_getter.stop()
-            break
-        
-        frame = video_getter.frame
-        frame = putIterationsPerSec(frame, cps.countsPerSec())
-        video_shower.frame = frame
-        cps.increment()
+    frame_queue = Queue()
+
+    videoget_proc = Process(target=VideoGet, args=(source,frame_queue))
+    videoshow_proc = Process(target=VideoShow, args=(frame_queue,))
+    
+    # cps = CountsPerSec().start()
+
+    videoget_proc.start()
+    videoshow_proc.start()
+
+    videoget_proc.join()
+    videoshow_proc.join()
+
 
 def main():
-    runThreads(source=0)
+    runProceses(source=0)
 
 if __name__ == "__main__":
     main()

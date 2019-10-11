@@ -1,8 +1,8 @@
 import argparse
 import cv2
 from CountsPerSec import CountsPerSec
-from VideoGet import VideoGet
-from VideoShow import VideoShow
+from VideoGet_copy import VideoGet
+from VideoShow_copy import VideoShow
 import StateManager
 from StateManager import Smile
 from transitions import Machine
@@ -39,8 +39,11 @@ def runThreads(source=0, FiniteStateMachine = None):
     video_shower = VideoShow(video_getter.frame).start()
     cps = CountsPerSec().start()
 
-    bg = np.asarray(cv2.imread('img/Diapositiva1.png'))
-    bg = cv2.resize(bg,(3840,2160))
+    bg_images = {}
+    for i, state in enumerate(StateManager.states):
+        bg = cv2.imread(f'img/Diapositiva{i%5+1}.png')
+        bg_images[state] = cv2.resize(bg,(3840,2160))
+
     while True:
         if video_getter.stopped or video_shower.stopped:
             video_shower.stop()
@@ -49,6 +52,10 @@ def runThreads(source=0, FiniteStateMachine = None):
         
         if FiniteStateMachine is not None:
             FiniteStateMachine.next()
+
+            bg = bg_images[FiniteStateMachine.state]
+
+
         
         frame = video_getter.frame
         frame = overlay_transparent(bg, frame,0,0)
