@@ -15,8 +15,9 @@ class Worker(Process):
         """
         Add iterations per second text to lower-left corner of a frame.
         """
+        print("in worker before while in_queue: ", self.in_queue.empty())
         while True:
-            print("in worker with in_queue: ", self.in_queue.empty())
+            
             if not self.in_queue.empty():
                 frame = self.in_queue.get()
                 x = random.randint(10,100)
@@ -29,16 +30,26 @@ def noThreading(source=0):
     """Grab and show video frames without multithreading."""
 
     cap = cv2.VideoCapture(source)
-    cps = CountsPerSec().start()
+
+    manager = Manager()
+    in_queue = manager.Queue()
+    out_queue = manager.Queue()
+
+    workers = Worker(in_queue, out_queue)
+    (grabbed, frame) = cap.read()
+    cv2.imshow("Video", frame)
+    workers.start()
+    workers.join()
 
     while True:
+        print("inside no threading loop")
         (grabbed, frame) = cap.read()
+        in_queue.put(frame)
         if not grabbed or cv2.waitKey(1) == ord("q"):
             break
-
-        frame = putIterationsPerSec(frame, cps.countsPerSec())
-        cv2.imshow("Video", frame)
-        cps.increment()
+        if not out_queue.empty():
+            frame2 = out_queue.get()
+            cv2.imshow("Video", frame2)
 
 def threadVideoGet(source=0):
     """
